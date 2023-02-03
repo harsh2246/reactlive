@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { useEffect,useState } from 'react';
+import CommentIcon from '@mui/icons-material/Comment';
 import React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -8,11 +9,25 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function App() {
   const [results,setResults]=useState([]);
-  const [userData,setUserData]=useState({})
+  const [userData,setUserData]=useState("")
+  const [open, setOpen] = React.useState(false);
+  const [comData,setComData] = React.useState([])
+  const handleClickOpen = (value) => {
+    setComData(comUser(value))
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const API="https://jsonplaceholder.typicode.com/posts";
   useEffect(function(){
     fetchApiData(API)
@@ -27,23 +42,28 @@ function App() {
     }
     catch(err){console.log(err);}
   }
-  const AllUser=async(userId)=>{
+  const AllUser=async(apkId)=>{
     try{
-      const res=await fetch(`"https://jsonplaceholder.typicode.com/users"/${userId}`)
+      const URLS="https://jsonplaceholder.typicode.com/users"
+      const res=await fetch(`${URLS}/${apkId}`)
       const data=await res.json();
-      return data.name
+      console.log(data.name)
+     return data.name
+      
     }
-    catch(err){console.log(err);}
+    catch(err){console.log(err)}
   }
-  /*const comUser=async(postId)=>{
+  const comUser=async(postId)=>{
     try{
-      const res=await fetch(`"https://jsonplaceholder.typicode.com/posts"/${postId}/comments`)
+      const URLS="https://jsonplaceholder.typicode.com/users"
+      const pk="comments"
+      const res=await fetch(`${URLS}/${postId}/${pk}`)
       const data=await res.json();
       setResults(data)
       
     }
     catch(err){console.log(err);}
-  }*/
+  }
   return (
     <div style={{display:'block',marginLeft:512}}>
       
@@ -60,17 +80,39 @@ function App() {
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 
+                 
+                  
                 
               </Typography>
               <Typography variant="body2" color="text.secondary">
                   {item.body}
+                  
               </Typography>
             </CardContent>
             <CardActions>
-              <Button size="small" >Comment</Button>
+              <CommentIcon color="primary"/>
+              <Button size="small" onClick={(e)=>{handleClickOpen(e.target.value)}}>Comment</Button>
+              <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending anonymous
+            location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
             </CardActions>
           </Card>
-          
           </div>
       })}
     </div>
